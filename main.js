@@ -24,15 +24,31 @@ class BingoAdmin {
     return false;
   }
 
-  getHtmlRender() {
+  markPlayersCartones(number) {
+    let marked = false;
+    this.players.forEach(player => {
+      if(player.markCarton(number)) marked = true;
+    });
+    return marked;
+  }
+
+  getHtmlPlayersRender() {
     let htmls = this.players.map(player => {
       return player.getHtmlRender();
     });
     return `<div class="playerContainer">${htmls.join('</div><div class="playerContainer">')}</div>`
   }
 
-  render() {
-    document.getElementById("players").innerHTML = this.getHtmlRender();
+  renderPlayers() {
+    document.getElementById("players").innerHTML = this.getHtmlPlayersRender();
+  }
+
+  getHtmlAdminRender() {
+    return "";
+  }
+
+  renderAdmin() {
+    document.getElementById("admin").innerHTML = this.getHtmlAdminRender();
   }
 }
 
@@ -57,6 +73,12 @@ class Player {
 
   getHtmlRender() {
     let html = `<h3 class="playerName"><span>${this.name}</span></h3>`;
+    html = `
+      <div class="playerForm">
+        ${html}
+        <input type="text">
+        <button onclick="bingoPage.addCartonPlayerName(event, '${this.name}')">Agregar carton</button>
+      </div>`;
     let cartonesHtml = this.cartones.map(carton => {
       return carton.getHtmlRender()
     });
@@ -82,7 +104,7 @@ class Carton {
   }
 
   mark(number) {
-    let found = numbers.find(n => n.value === number);
+    let found = this.numbers.find(n => n.value === number);
     if(!found) return false;
     found.marked = true;
     return true
@@ -124,10 +146,11 @@ class BingoPage {
     this.bingoAdmin = bingoAdmin;
   }
 
-  addPlayer(name) {
+  addPlayer() {
+    let name = document.getElementById("addPlayerInput").value;
     let player = new Player(name);
     if(this.bingoAdmin.addPlayer(player)) {
-      this.bingoAdmin.render();
+      this.bingoAdmin.renderPlayers();
     } else {
       //some error?
     }
@@ -139,12 +162,23 @@ class BingoPage {
     return this.bingoAdmin.getPlayerByName(name);
   }
 
-  addCartonPlayerName(carton, playerName) {
+  //TODO remove testing function
+  markCarton(number) {
+    this.bingoAdmin.markPlayersCartones(number);
+    this.bingoAdmin.renderPlayers();
+  }
+
+  addCartonPlayerName(event, playerName) {
+    let carton = new Carton(event.target.parentElement.children[1].value);
     if(this.bingoAdmin.addCartonPlayerName(carton, playerName)) {
-      this.bingoAdmin.render();
+      this.bingoAdmin.renderPlayers();
     } else {
       //error?
     }
+  }
+
+  addCartonToPlayer(player) {
+
   }
 }
 

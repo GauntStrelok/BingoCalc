@@ -32,8 +32,13 @@
       /* display: flex; */
     }
 
+    .playerForm {
+      display: flex;
+    }
+
     .playerName {
       margin: 0;
+      margin-right: 10px;
     }
 
     .cartonContainer {
@@ -51,6 +56,14 @@
       margin-right: 30px;
     }
 
+    .formContainer {
+      display: flex;
+    }
+
+    td.marked {
+      background-color: green;
+    }
+
     body {
       display: flex;
       overflow: hidden;
@@ -60,8 +73,12 @@
 </head>
 
 <body>
-  <div id="div" class="admin" width="33%">
-    <span>asdasd</span>
+  <div id="admin" class="admin" width="33%">
+    <div class="formContainer">
+      <input type="text" name="addPlayer" id="addPlayerInput">
+      <button type="button" name="button" onclick="window.bingoPage.addPlayer()">Agregar jugador</button>
+    </div>
+
   </div>
   <div id="players" width="66%">
 
