@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <script src="./cartones.js" charset="utf-8"></script>
+  <script src="./cartonGenerator.js" charset="utf-8"></script>
+  <style>
+    #cartones table {
+      margin-top: 10px;
+      border-collapse: collapse;
+    }
+
+    #cartones table td {
+      width: 60px;
+      height: 60px;
+      color: red;
+      text-align: center;
+      font-size: 50px;
+      border: 2px solid black;
+    }
+
+    #cartones table td.empty {
+      background-color: blue
+    }
+  </style>
+  <title>Generador de carton/es</title>
+</head>
+
+<body>
+  <label for="amount">Cantidad</label><input type="text" name="amount" value="" id="amountCartones" />
+  <label for="contiguous">Continuos</label><input type="checkbox" name="contiguous" id="contiguousCartones" value="">
+  <button type="button" name="button" onclick="showRandomCartones()">Buscar</button>
+  <div id="cartones">
+
+  </div>
+</body>
+
+</html>

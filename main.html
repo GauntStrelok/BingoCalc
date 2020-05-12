@@ -1,15 +1,71 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <script src="./cartones.js" charset="utf-8"></script>
-    <script src="./main.js" charset="utf-8"></script>
-    <title></title>
-  </head>
-  <body>
-    <span>Hola</span>
-    <div id="div">
-      <span>asdasd</span>
-    </div>
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <script src="./cartones.js" charset="utf-8"></script>
+  <script src="./main.js" charset="utf-8"></script>
+  <style>
+    #players {
+      overflow: hidden;
+    }
+
+    #players table {
+      margin: 10px;
+      border-collapse: collapse;
+    }
+
+    #players table td {
+      color: red;
+      text-align: center;
+      border: 2px solid black;
+      width: 20px;
+      height: 20px;
+      /* font-size: 50px; */
+    }
+
+    #players table td.empty {
+      background-color: blue
+    }
+
+    .playerContainer {
+      /* display: flex; */
+    }
+
+    .playerName {
+      margin: 0;
+    }
+
+    .cartonContainer {
+      display: flex;
+      flex-shrink: 0;
+    }
+
+    .cartonsContainer {
+      display: flex;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .admin {
+      margin-right: 30px;
+    }
+
+    body {
+      display: flex;
+      overflow: hidden;
+    }
+  </style>
+  <title></title>
+</head>
+
+<body>
+  <div id="div" class="admin" width="33%">
+    <span>asdasd</span>
+  </div>
+  <div id="players" width="66%">
+
+  </div>
+</body>
+
 </html>

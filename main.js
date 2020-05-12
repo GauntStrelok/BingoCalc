@@ -7,14 +7,28 @@ class BingoAdmin {
 
   addPlayer(player) {
     this.players.push(player);
+    //add validation by name and return false if player is already created
     return true;
+  }
+
+  getPlayerByName(name) {
+    return this.players.find(player => player.name === name);
+  }
+
+  addCartonPlayerName(carton, playerName) {
+    let player = this.getPlayerByName(playerName);
+    if(player) {
+      player.addCarton(carton);
+      return true
+    }
+    return false;
   }
 
   getHtmlRender() {
     let htmls = this.players.map(player => {
-      player.getHtmlRender();
+      return player.getHtmlRender();
     });
-    return `<div>${htmls.join('</div><div>')}</div>`
+    return `<div class="playerContainer">${htmls.join('</div><div class="playerContainer">')}</div>`
   }
 
   render() {
@@ -42,17 +56,23 @@ class Player {
   }
 
   getHtmlRender() {
-    let html = `<div style="width:20%"><span>${this.name}</span></div>`;
+    let html = `<h3 class="playerName"><span>${this.name}</span></h3>`;
     let cartonesHtml = this.cartones.map(carton => {
       return carton.getHtmlRender()
     });
-    html += `<div style="width:20%">${cartonesHtml.join('</div><div style="width:20%">')}</div>`
+    html += `<div class="cartonsContainer">
+        <div class="cartonContainer">
+          ${cartonesHtml.join('</div><div class="cartonContainer">')}
+        </div>
+      </div>`;
     return html;
   }
 }
 
 class Carton {
-  constructor(numbers) {
+  constructor(cartonNumber) {
+    this.cartonNumber = cartonNumber;
+    let numbers = window.cartones[cartonNumber];
     this.numbers = numbers.map(n => {
       return {
         value: n,
@@ -69,7 +89,32 @@ class Carton {
   }
 
   getHtmlRender() {
-    return `<div><span>${numbers.join('-')}</span></div>`
+    function getLineCells(numbers) {
+      let html = "";
+      numbers.forEach(numberObject => {
+        let n = numberObject.value;
+        let cssClass = "hasNumber"
+        if(!n) {
+          cssClass = "empty";
+        }
+        if(numberObject.marked) cssClass += " marked";
+        html += `<td class="${cssClass}">${n || ""}</td>`
+      });
+      return html;
+    }
+
+    let line1 = this.numbers.slice(0,9);
+    let line2 = this.numbers.slice(9,18);
+    let line3 = this.numbers.slice(18,27);
+
+    let htmlCarton = `<h4 class="cartonNumber">${this.cartonNumber}:</h4><table><tbody>
+    <tr>${getLineCells(line1)}</tr>
+    <tr>${getLineCells(line2)}</tr>
+    <tr>${getLineCells(line3)}</tr>
+    </tbody>
+    </table>`
+
+    return htmlCarton;
   }
 }
 
@@ -81,10 +126,26 @@ class BingoPage {
 
   addPlayer(name) {
     let player = new Player(name);
-    this.bingoAdmin.addPlayer();
+    if(this.bingoAdmin.addPlayer(player)) {
+      this.bingoAdmin.render();
+    } else {
+      //some error?
+    }
+    return player;
+  }
+
+  //TODO remove testing function
+  getPlayerByName(name) {
+    return this.bingoAdmin.getPlayerByName(name);
+  }
+
+  addCartonPlayerName(carton, playerName) {
+    if(this.bingoAdmin.addCartonPlayerName(carton, playerName)) {
+      this.bingoAdmin.render();
+    } else {
+      //error?
+    }
   }
 }
 
-window.bingoAdmin = new BingoAdmin();
-
-window.bingoPage = new BingoPage(window.bingoAdmin);
+window.bingoPage = new BingoPage(new BingoAdmin());
