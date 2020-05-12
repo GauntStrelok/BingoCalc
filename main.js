@@ -41,9 +41,31 @@ class BingoAdmin {
 
   markPlayersCartones(number) {
     let marked = false;
+    let lines = [];
+    let bingos = [];
     this.players.forEach(player => {
-      if (player.markCarton(number)) marked = true;
+      if (player.markCarton(number)) {
+        marked = true;
+        if (player.hasLine) lines.push(player);
+        if (player.hasBingo) bingos.push(player);
+      }
     });
+    if (!this.lineCalled && lines.length) {
+      if (confirm("Estos jugadores tienen linea.\n" +
+          lines.map(player => player.name).join(", ") +
+          "\n Apriete confirmar para que no vuelva a aparecer este mensaje, o cancelar para seguir viendolo")) {
+            this.lineCalled = true;
+      }
+    }
+
+    if (!this.bingoCalled && bingos.length) {
+      if (confirm("Estos jugadores tienen BINGO.\n" +
+          bingos.map(player => player.name).join(", ") +
+          "\n Apriete confirmar para que no vuelva a aparecer este mensaje, o cancelar para seguir viendolo")) {
+            this.bingoCalled = true;
+      }
+    }
+
     return marked;
   }
 
@@ -100,6 +122,8 @@ class Player {
   constructor(name) {
     this.name = name;
     this.cartones = [];
+    this.hasLine = false;
+    this.hasBingo = false;
   }
 
   addCarton(carton) {
@@ -110,7 +134,15 @@ class Player {
   markCarton(number) {
     let marked = false;
     this.cartones.forEach(carton => {
-      if (carton.mark(number)) marked = true;
+      if (carton.mark(number)) {
+        marked = true;
+        if (!this.hasLine) {
+          if (carton.checkLine()) this.hasLine = true;
+        }
+        if (!this.hasBingo) {
+          if (carton.checkBingo()) this.hasBingo = true;
+        }
+      }
     });
     return marked;
   }
@@ -149,9 +181,30 @@ class Carton {
 
   mark(number) {
     let found = this.numbers.find(n => n.value === number);
-    if (!found) return false;
-    found.marked = true;
-    return true
+    if (found) {
+      found.marked = true;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  checkLine() {
+    let line1 = this.numbers.slice(0, 9);
+    let line2 = this.numbers.slice(9, 18);
+    let line3 = this.numbers.slice(18, 27);
+    let lines = [line1, line2, line3];
+    return lines.some(line => {
+      return line.every(number => {
+        return !number.value || number.marked
+      });
+    });
+  }
+
+  checkBingo() {
+    return this.numbers.every(number => {
+      return !number.value || number.marked
+    });
   }
 
   getHtmlRender() {
@@ -215,7 +268,7 @@ class BingoPage {
   }
 
   getRandomNumber() {
-    if(this.bingoAdmin.removeRandomAvailableNumber()) this.bingoAdmin.renderPlayers();
+    if (this.bingoAdmin.removeRandomAvailableNumber()) this.bingoAdmin.renderPlayers();
     this.bingoAdmin.renderNumbers();
   }
 
