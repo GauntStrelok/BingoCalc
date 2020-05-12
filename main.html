@@ -64,6 +64,10 @@
       background-color: green;
     }
 
+    td.selected {
+      background-color: green;
+    }
+
     body {
       display: flex;
       overflow: hidden;
@@ -73,14 +77,17 @@
 </head>
 
 <body>
-  <div id="admin" class="admin" width="33%">
+  <div id="admin" class="admin">
     <div class="formContainer">
       <input type="text" name="addPlayer" id="addPlayerInput">
       <button type="button" name="button" onclick="window.bingoPage.addPlayer()">Agregar jugador</button>
     </div>
-
+    <div class="formContainer">
+      <button type="button" name="button" onclick="window.bingoPage.getRandomNumber()">Sacar numero</button>
+    </div>
+    <div id="numbers"></div>
   </div>
-  <div id="players" width="66%">
+  <div id="players">
 
   </div>
 </body>

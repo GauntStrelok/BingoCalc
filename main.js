@@ -1,8 +1,23 @@
 //return true renders, return false does not render
+const allNumbers = [...Array(90).keys()].map(n => n + 1);
+
+const randomInt = function(max) {
+  return Math.floor((max + 1) * Math.random());
+}
 
 class BingoAdmin {
   constructor() {
     this.players = [];
+    this.selectedNumbers = [];
+    this.availableNumbers = [...allNumbers];
+  }
+
+  removeRandomAvailableNumber() {
+    let index = randomInt(this.availableNumbers.length - 1);
+    let number = this.availableNumbers[index];
+    this.availableNumbers.splice(index, 1);
+    this.selectedNumbers.push(number);
+    return this.markPlayersCartones(number);
   }
 
   addPlayer(player) {
@@ -17,7 +32,7 @@ class BingoAdmin {
 
   addCartonPlayerName(carton, playerName) {
     let player = this.getPlayerByName(playerName);
-    if(player) {
+    if (player) {
       player.addCarton(carton);
       return true
     }
@@ -27,7 +42,7 @@ class BingoAdmin {
   markPlayersCartones(number) {
     let marked = false;
     this.players.forEach(player => {
-      if(player.markCarton(number)) marked = true;
+      if (player.markCarton(number)) marked = true;
     });
     return marked;
   }
@@ -43,12 +58,41 @@ class BingoAdmin {
     document.getElementById("players").innerHTML = this.getHtmlPlayersRender();
   }
 
-  getHtmlAdminRender() {
-    return "";
+  getHtmlNumbersRender() {
+
+    let rows = [
+      [...Array(9).keys()].map(n => n + 1),
+      [...Array(10).keys()].map(n => n + 10),
+      [...Array(10).keys()].map(n => n + 20),
+      [...Array(10).keys()].map(n => n + 30),
+      [...Array(10).keys()].map(n => n + 40),
+      [...Array(10).keys()].map(n => n + 50),
+      [...Array(10).keys()].map(n => n + 60),
+      [...Array(10).keys()].map(n => n + 70),
+      [...Array(10).keys()].map(n => n + 80),
+      [90]
+    ];
+
+    let rowsHTML = "";
+    rows.forEach(numbers => {
+      rowsHTML += "<tr>"
+      numbers.forEach(number => {
+        let cssClass = ""
+        if (this.selectedNumbers.includes(number)) cssClass = "selected"
+        rowsHTML += `<td class="${cssClass}">${number}</td>`
+      });
+      rowsHTML += "</tr>";
+    });
+
+
+    let html = `<table>
+        ${rowsHTML}
+      </table>`
+    return html;
   }
 
-  renderAdmin() {
-    document.getElementById("admin").innerHTML = this.getHtmlAdminRender();
+  renderNumbers() {
+    document.getElementById("numbers").innerHTML = this.getHtmlNumbersRender();
   }
 }
 
@@ -66,7 +110,7 @@ class Player {
   markCarton(number) {
     let marked = false;
     this.cartones.forEach(carton => {
-      if(carton.mark(number)) marked = true;
+      if (carton.mark(number)) marked = true;
     });
     return marked;
   }
@@ -105,7 +149,7 @@ class Carton {
 
   mark(number) {
     let found = this.numbers.find(n => n.value === number);
-    if(!found) return false;
+    if (!found) return false;
     found.marked = true;
     return true
   }
@@ -116,18 +160,18 @@ class Carton {
       numbers.forEach(numberObject => {
         let n = numberObject.value;
         let cssClass = "hasNumber"
-        if(!n) {
+        if (!n) {
           cssClass = "empty";
         }
-        if(numberObject.marked) cssClass += " marked";
+        if (numberObject.marked) cssClass += " marked";
         html += `<td class="${cssClass}">${n || ""}</td>`
       });
       return html;
     }
 
-    let line1 = this.numbers.slice(0,9);
-    let line2 = this.numbers.slice(9,18);
-    let line3 = this.numbers.slice(18,27);
+    let line1 = this.numbers.slice(0, 9);
+    let line2 = this.numbers.slice(9, 18);
+    let line3 = this.numbers.slice(18, 27);
 
     let htmlCarton = `<h4 class="cartonNumber">${this.cartonNumber}:</h4><table><tbody>
     <tr>${getLineCells(line1)}</tr>
@@ -149,7 +193,7 @@ class BingoPage {
   addPlayer() {
     let name = document.getElementById("addPlayerInput").value;
     let player = new Player(name);
-    if(this.bingoAdmin.addPlayer(player)) {
+    if (this.bingoAdmin.addPlayer(player)) {
       this.bingoAdmin.renderPlayers();
     } else {
       //some error?
@@ -166,11 +210,18 @@ class BingoPage {
   markCarton(number) {
     this.bingoAdmin.markPlayersCartones(number);
     this.bingoAdmin.renderPlayers();
+    this.bingoAdmin.selectedNumbers.push(number);
+    this.bingoAdmin.renderNumbers();
+  }
+
+  getRandomNumber() {
+    if(this.bingoAdmin.removeRandomAvailableNumber()) this.bingoAdmin.renderPlayers();
+    this.bingoAdmin.renderNumbers();
   }
 
   addCartonPlayerName(event, playerName) {
     let carton = new Carton(event.target.parentElement.children[1].value);
-    if(this.bingoAdmin.addCartonPlayerName(carton, playerName)) {
+    if (this.bingoAdmin.addCartonPlayerName(carton, playerName)) {
       this.bingoAdmin.renderPlayers();
     } else {
       //error?

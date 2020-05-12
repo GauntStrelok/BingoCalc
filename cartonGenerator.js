@@ -1,5 +1,5 @@
 function randomInt(max) {
-  return Math.floor(max * Math.random());
+  return Math.floor((max + 1) * Math.random());
 }
 
 function getLineCells(numbers) {
