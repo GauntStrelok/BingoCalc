@@ -10,6 +10,7 @@ class BingoAdmin {
     this.players = [];
     this.selectedNumbers = [];
     this.availableNumbers = [...allNumbers];
+    this.latestNumber = null;
   }
 
   removeRandomAvailableNumber() {
@@ -17,6 +18,7 @@ class BingoAdmin {
     let number = this.availableNumbers[index];
     this.availableNumbers.splice(index, 1);
     this.selectedNumbers.push(number);
+    this.latestNumber = number;
     return this.markPlayersCartones(number);
   }
 
@@ -106,8 +108,12 @@ class BingoAdmin {
       rowsHTML += "</tr>";
     });
 
+    let latestNumberHTML = this.latestNumber ?
+      `<div class="latestNumberContainer"><h1 class="latestNumber">${this.latestNumber}</h1></div>` :
+      "";
 
-    let html = `<table>
+
+    let html = `${latestNumberHTML}<table>
         ${rowsHTML}
       </table>`
     return html;
