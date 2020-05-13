@@ -54,7 +54,7 @@ class BingoAdmin {
       if (confirm("Estos jugadores tienen linea.\n" +
           lines.map(player => player.name).join(", ") +
           "\n Apriete confirmar para que no vuelva a aparecer este mensaje, o cancelar para seguir viendolo")) {
-            this.lineCalled = true;
+        this.lineCalled = true;
       }
     }
 
@@ -62,7 +62,7 @@ class BingoAdmin {
       if (confirm("Estos jugadores tienen BINGO.\n" +
           bingos.map(player => player.name).join(", ") +
           "\n Apriete confirmar para que no vuelva a aparecer este mensaje, o cancelar para seguir viendolo")) {
-            this.bingoCalled = true;
+        this.bingoCalled = true;
       }
     }
 
@@ -152,9 +152,12 @@ class Player {
     html = `
       <div class="playerForm">
         ${html}
-        <input type="text">
-        <button onclick="bingoPage.addCartonPlayerName(event, '${this.name}')">Agregar carton</button>
-      </div>`;
+        <input id="inputCarton${this.name}" onkeydown="window.bingoPage.keyPressAddCarton(event, '${this.name}')" type="text">
+        <button onclick="bingoPage.addCartonPlayerNameButton(event, '${this.name}')">Agregar carton</button>
+      </div>
+      <span class="cartonInputInformation">
+      Podes usar una coma para indicar un conjunto de cartones, por ejemplo 1,5 para indicar que agregue los cartones del 1 al 5
+      </span>`;
     let cartonesHtml = this.cartones.map(carton => {
       return carton.getHtmlRender()
     });
@@ -244,11 +247,19 @@ class BingoPage {
     this.numbersTableSize = 20;
   }
 
+  keyPressAddPlayer(evt) {
+    if (evt.keyCode === 13) {
+      evt.preventDefault(); // Ensure it is only this code that rusn
+      this.addPlayer();
+    }
+  }
+
   addPlayer() {
     let name = document.getElementById("addPlayerInput").value;
     let player = new Player(name);
     if (this.bingoAdmin.addPlayer(player)) {
       this.bingoAdmin.renderPlayers();
+      document.getElementById("addPlayerInput").value = ""
     } else {
       //some error?
     }
@@ -273,12 +284,49 @@ class BingoPage {
     this.bingoAdmin.renderNumbers(this.numbersTableSize);
   }
 
-  addCartonPlayerName(event, playerName) {
-    let carton = new Carton(event.target.parentElement.children[1].value);
-    if (this.bingoAdmin.addCartonPlayerName(carton, playerName)) {
-      this.bingoAdmin.renderPlayers();
+  keyPressAddCarton(evt, playerName) {
+    if (evt.keyCode === 13) {
+      evt.preventDefault(); // Ensure it is only this code that rusn
+      let id = evt.target.id;
+      if (this.addCartonPlayerName(evt.target.value, playerName)) {
+        document.getElementById(id).focus()
+      } else {
+        //error?
+      }
+    }
+  }
+
+  addCartonPlayerNameButton(evt, playerName) {
+    this.addCartonPlayerName(evt.target.parentElement.children[1].value, playerName);
+  }
+
+  addCartonPlayerName(cartonNumber, playerName) {
+    if(cartonNumber.includes(",")) {
+      let [initialCarton, finalCarton] = cartonNumber.split(",");
+      let addedAtLeast1Carton = false;
+      for(let i = initialCarton; i <= finalCarton; i++) {
+        let carton = new Carton(i);
+        if(this.bingoAdmin.addCartonPlayerName(carton, playerName)) {
+          addedAtLeast1Carton = true;
+        }
+      }
+      if(addedAtLeast1Carton) {
+        this.bingoAdmin.renderPlayers();
+        return true;
+      } else {
+        //error?
+        return false;
+      }
+
     } else {
-      //error?
+      let carton = new Carton(cartonNumber);
+      if (this.bingoAdmin.addCartonPlayerName(carton, playerName)) {
+        this.bingoAdmin.renderPlayers();
+        return true;
+      } else {
+        //error?
+        return false;
+      }
     }
   }
 
@@ -292,7 +340,7 @@ class BingoPage {
   }
 
   zoomOutNumbersTable() {
-    if(this.numbersTableSize === 15) {
+    if (this.numbersTableSize === 15) {
       return false;
     } else {
       this.numbersTableSize -= 5;
