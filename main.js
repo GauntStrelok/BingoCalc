@@ -80,7 +80,7 @@ class BingoAdmin {
     document.getElementById("players").innerHTML = this.getHtmlPlayersRender();
   }
 
-  getHtmlNumbersRender() {
+  getHtmlNumbersRender(fontSize) {
 
     let rows = [
       [...Array(9).keys()].map(n => n + 1),
@@ -99,9 +99,9 @@ class BingoAdmin {
     rows.forEach(numbers => {
       rowsHTML += "<tr>"
       numbers.forEach(number => {
-        let cssClass = ""
-        if (this.selectedNumbers.includes(number)) cssClass = "selected"
-        rowsHTML += `<td class="${cssClass}">${number}</td>`
+        let cssClass = "";
+        if (this.selectedNumbers.includes(number)) cssClass += " selected"
+        rowsHTML += `<td class="${cssClass}" style="font-size:${fontSize}px">${number}</td>`
       });
       rowsHTML += "</tr>";
     });
@@ -113,8 +113,8 @@ class BingoAdmin {
     return html;
   }
 
-  renderNumbers() {
-    document.getElementById("numbers").innerHTML = this.getHtmlNumbersRender();
+  renderNumbers(fontSize) {
+    document.getElementById("numbers").innerHTML = this.getHtmlNumbersRender(fontSize);
   }
 }
 
@@ -241,6 +241,7 @@ class BingoPage {
   //this needs a bingoAdmin to work
   constructor(bingoAdmin) {
     this.bingoAdmin = bingoAdmin;
+    this.numbersTableSize = 20;
   }
 
   addPlayer() {
@@ -269,7 +270,7 @@ class BingoPage {
 
   getRandomNumber() {
     if (this.bingoAdmin.removeRandomAvailableNumber()) this.bingoAdmin.renderPlayers();
-    this.bingoAdmin.renderNumbers();
+    this.bingoAdmin.renderNumbers(this.numbersTableSize);
   }
 
   addCartonPlayerName(event, playerName) {
@@ -281,9 +282,29 @@ class BingoPage {
     }
   }
 
-  addCartonToPlayer(player) {
-
+  zoomInNumbersTable() {
+    this.numbersTableSize += 5;
+    document.querySelectorAll("#numbers td").forEach(element => {
+      //element.style.width = this.numbersTableSize + "px";
+      //element.style.height = this.numbersTableSize + "px";
+      element.style["font-size"] = this.numbersTableSize + "px";
+    });
   }
+
+  zoomOutNumbersTable() {
+    if(this.numbersTableSize === 15) {
+      return false;
+    } else {
+      this.numbersTableSize -= 5;
+      document.querySelectorAll("#numbers td").forEach(element => {
+        //element.style.width = this.numbersTableSize + "px";
+        //element.style.height = this.numbersTableSize + "px";
+        element.style["font-size"] = this.numbersTableSize + "px";
+      });
+    }
+  }
+
+
 }
 
 window.bingoPage = new BingoPage(new BingoAdmin());

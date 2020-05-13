@@ -28,6 +28,19 @@
       background-color: blue
     }
 
+    #numbers td {
+      /* width: 30px;
+      height: 30px; */
+      font-size: 20px;
+      color: black;
+      text-align: center;
+    }
+
+    #numbers td.selected {
+      background-color: green;
+      color: white;
+    }
+
     .playerContainer {
       /* display: flex; */
     }
@@ -64,10 +77,6 @@
       background-color: green;
     }
 
-    td.selected {
-      background-color: green;
-    }
-
     body {
       display: flex;
       overflow: hidden;
@@ -84,6 +93,10 @@
     </div>
     <div class="formContainer">
       <button type="button" name="button" onclick="window.bingoPage.getRandomNumber()">Sacar numero</button>
+    </div>
+    <div class="formContainer">
+      <button type="button" name="button" onclick="window.bingoPage.zoomInNumbersTable()">Agrandar numeros</button>
+      <button type="button" name="button" onclick="window.bingoPage.zoomOutNumbersTable()">Achicar numeros</button>
     </div>
     <div id="numbers"></div>
   </div>
