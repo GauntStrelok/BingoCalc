@@ -116,6 +116,10 @@ class BingoAdmin {
   renderNumbers(fontSize) {
     document.getElementById("numbers").innerHTML = this.getHtmlNumbersRender(fontSize);
   }
+
+  renderAdminNumbersAmount() {
+    document.getElementById("selectedNumbersAmount").innerHTML = "Bolillas sacadas: " + this.selectedNumbers.length;
+  }
 }
 
 class Player {
@@ -282,6 +286,7 @@ class BingoPage {
   getRandomNumber() {
     if (this.bingoAdmin.removeRandomAvailableNumber()) this.bingoAdmin.renderPlayers();
     this.bingoAdmin.renderNumbers(this.numbersTableSize);
+    this.bingoAdmin.renderAdminNumbersAmount();
   }
 
   keyPressAddCarton(evt, playerName) {
