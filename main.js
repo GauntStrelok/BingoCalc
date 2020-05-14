@@ -85,7 +85,7 @@ class BingoAdmin {
   getHtmlNumbersRender(fontSize) {
 
     let rows = [
-      [...Array(9).keys()].map(n => n + 1),
+      [""].concat([...Array(9).keys()].map(n => n + 1)),//first td is empty
       [...Array(10).keys()].map(n => n + 10),
       [...Array(10).keys()].map(n => n + 20),
       [...Array(10).keys()].map(n => n + 30),
