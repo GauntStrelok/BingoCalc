@@ -11,6 +11,8 @@ class BingoAdmin {
     this.selectedNumbers = [];
     this.availableNumbers = [...allNumbers];
     this.latestNumber = null;
+    this.lineCalled = false;
+    this.bingoCalled = false;
   }
 
   removeRandomAvailableNumber() {
@@ -53,7 +55,7 @@ class BingoAdmin {
       }
     });
     if (!this.lineCalled && lines.length) {
-      if (confirm("Estos jugadores tienen linea.\n" +
+      if (confirm("Estos jugadores tienen linea con el numero " + number + " .\n" +
           lines.map(player => player.name).join(", ") +
           "\n Apriete confirmar para que no vuelva a aparecer este mensaje, o cancelar para seguir viendolo")) {
         this.lineCalled = true;
@@ -61,7 +63,7 @@ class BingoAdmin {
     }
 
     if (!this.bingoCalled && bingos.length) {
-      if (confirm("Estos jugadores tienen BINGO.\n" +
+      if (confirm("Estos jugadores tienen BINGO con el numero " + number + " .\n" +
           bingos.map(player => player.name).join(", ") +
           "\n Apriete confirmar para que no vuelva a aparecer este mensaje, o cancelar para seguir viendolo")) {
         this.bingoCalled = true;
@@ -126,6 +128,20 @@ class BingoAdmin {
   renderAdminNumbersAmount() {
     document.getElementById("selectedNumbersAmount").innerHTML = "Bolillas sacadas: " + this.selectedNumbers.length;
   }
+
+  resetBingo() {
+    this.availableNumbers = [...allNumbers];
+    this.selectedNumbers = [];
+    this.players.forEach((player) => {
+      player.reset();
+    })
+    this.renderPlayers();
+    this.renderNumbers();
+    this.renderAdminNumbersAmount();
+    this.latestNumber = null;
+    this.lineCalled = false;
+    this.bingoCalled = false;
+  }
 }
 
 class Player {
@@ -177,6 +193,18 @@ class Player {
         </div>
       </div>`;
     return html;
+  }
+
+  reset() {
+    this.hasLine = false;
+    this.hasBingo = false;
+    this.resetCartones();
+  }
+
+  resetCartones() {
+    this.cartones.forEach((carton) => {
+      carton.reset();
+    })
   }
 }
 
@@ -247,6 +275,12 @@ class Carton {
     </table>`
 
     return htmlCarton;
+  }
+
+  reset() {
+    this.numbers.forEach((number) => {
+      number.marked = false;
+    })
   }
 }
 
@@ -361,6 +395,10 @@ class BingoPage {
         element.style["font-size"] = this.numbersTableSize + "px";
       });
     }
+  }
+
+  resetBingo() {
+    this.bingoAdmin.resetBingo();
   }
 
 
